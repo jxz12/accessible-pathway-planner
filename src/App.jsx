@@ -1,6 +1,6 @@
 import { useState } from "react";
-import Map from 'react-map-gl';
-// import 'maplibre-gl/dist/maplibre-gl.css'
+import Map, { FullscreenControl, NavigationControl, ScaleControl } from 'react-map-gl';
+import 'maplibre-gl/dist/maplibre-gl.css';  // NOTE: this is needed for controls to render correctly
 
 
 export default function App() {
@@ -17,7 +17,11 @@ export default function App() {
         onMove={evt => setViewState(evt.viewState)}
         style={{ width: "100%", height: "95vh" }}
         mapStyle="https://tiles.basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"
-      />
+      >
+        <FullscreenControl />
+        <NavigationControl />
+        <ScaleControl />
+      </Map>
     </>
   );
 }
