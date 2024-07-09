@@ -1,34 +1,18 @@
 import { useRef, useState, useEffect } from "react";
-import maplibregl from "maplibre-gl";
+import Map from 'react-map-gl';
+import 'maplibre-gl/dist/maplibre-gl.css'
 
 
 export default function App() {
-  const mapContainer = useRef(null);
-  const [view, setView] = useState({
-    center: [-100.43, 35],
-    zoom: 1,
-    pitch: 0,
-  });
-  useEffect(() => {
-    const map = new maplibregl.Map({
-      container: mapContainer.current,
-      // style: "https://demotiles.maplibre.org/style.json",
-      // style: "https://demotiles.maplibre.org/styles/osm-bright-gl-style/style.json",
-      // style: "https://github.com/maplibre/demotiles/blob/gh-pages/styles/osm-bright-gl-style/style.json",
-      style: "https://tiles.basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json",
-      ...view,
-    });
-    // map.addControl(new maplibregl.ScaleControl(), "bottom-right");
-    map.addControl(new maplibregl.FullscreenControl());
-    // map.addControl(new maplibregl.NavigationControl(), "bottom-right");
-    // map.addControl(new maplibregl.GeolocateControl(), "bottom-right");
-    return () => {
-      map.remove();
-    };
-  }, []);
   return (
     <>
-      <div ref={mapContainer} style={{width: 600, height: 400}}></div>
+      {/* <link href='https://unpkg.com/maplibre-gl@4.5.0/dist/maplibre-gl.css' rel='stylesheet'/> */}
+      <Map
+        mapLib={import("maplibre-gl")}
+        initialViewState={{ longitude: -100, latitude: 40, zoom: 3.5 }}
+        style={{ width: 500, height: 500 }}
+        mapStyle="https://tiles.basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"
+      />
     </>
   );
 }
