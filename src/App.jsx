@@ -12,11 +12,19 @@ export default function App() {
     zoom: 14.5,
   });
   const [pins, setPins] = useState([
-    { longitude: -79.3961, latitude: 43.6635},
+    { longitude: -79.3961, latitude: 43.6635, id: 0},
   ]);
   const addPin = (mapEvent) => {
-    console.log(mapEvent);
-    setPins([...pins, { longitude: mapEvent.lngLat.lng, latitude: mapEvent.lngLat.lat }]);
+    // TODO: This will eventually just be an auto-increment SQL column
+    const newId = pins.length>0 ? pins[pins.length-1].id+1 : 0;
+    setPins([...pins, {
+      longitude: mapEvent.lngLat.lng,
+      latitude: mapEvent.lngLat.lat,
+      id: newId,
+    }]);
+  };
+  const removePin = (id) => {
+    setPins(pins.filter((pin) => pin.id !== id));
   };
 
   return (
@@ -32,8 +40,8 @@ export default function App() {
       <NavigationControl />
       <ScaleControl />
       {pins.map((pin) => (
-        <Marker longitude={pin.longitude} latitude={pin.latitude} anchor="bottom">
-          <img src={pinsvg} />
+        <Marker longitude={pin.longitude} latitude={pin.latitude} key={pin.id} anchor="bottom">
+          <img src={pinsvg} onClick={(e) => { removePin(pin.id); e.stopPropagation(); }}/>
         </Marker>
       ))}
     </Map>
