@@ -7,10 +7,13 @@ import 'maplibre-gl/dist/maplibre-gl.css';  // NOTE: this is needed for controls
 
 export default function App() {
   const [viewState, setViewState] = useState({
+    // Toronto
     longitude: -79.3961,
     latitude: 43.6635,
     zoom: 14.5,
   });
+  const backend_root = `https://${import.meta.env.VITE_BACKEND_HOST}:${import.meta.env.VITE_BACKEND_PORT}`;
+
   const [pins, setPins] = useState([
     { longitude: -79.3961, latitude: 43.6635, id: 0},
   ]);
@@ -22,8 +25,13 @@ export default function App() {
       latitude: mapEvent.lngLat.lat,
       id: newId,
     }]);
+    fetch(`${backend_root}/accessibility`).then((rsp) => {
+      return rsp.json();
+    }).then((rsp) => {
+      console.log(rsp);
+    });
   };
-  const removePin = (id) => {
+  const viewPin = (id) => {
     setPins(pins.filter((pin) => pin.id !== id));
   };
 
@@ -41,7 +49,7 @@ export default function App() {
       <ScaleControl />
       {pins.map((pin) => (
         <Marker longitude={pin.longitude} latitude={pin.latitude} key={pin.id} anchor="bottom">
-          <img src={pinsvg} onClick={(e) => { removePin(pin.id); e.stopPropagation(); }}/>
+          <img src={pinsvg} onClick={(e) => { viewPin(pin.id); e.stopPropagation(); }}/>
         </Marker>
       ))}
     </Map>
