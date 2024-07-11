@@ -1,0 +1,14 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "backend for APP",
+  "main": "app.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  },
+  "author": "",
+  "license": "ISC"
+}
