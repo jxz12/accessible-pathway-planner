@@ -3,53 +3,83 @@ const { Pool } = require("pg");
 require("dotenv").config();
 
 const pool = new Pool({
-    connectionString: process.env.SUPABASE_CONNECTION_STRING,
-    // ssl: { rejectUnauthorized: false },
+  connectionString: process.env.SUPABASE_CONNECTION_STRING,
+  // ssl: { rejectUnauthorized: false },
 });
 
 const app = express();
 
 app.get('/accessibility', async (req, res) => {
-    const result = await pool.query("SELECT * FROM accessibility");
-    res.send(result.rows);
+  const result = await pool.query("SELECT * FROM accessibility");
+  res.send(result.rows);
 });
 
 app.get('/landmark', async (req, res) => {
-    const result = await pool.query(`
-        SELECT *
-        FROM landmark l JOIN accessibility a ON l.accessibility_id=a.id
-    `);
-    res.send(result.rows);
-});
-
-app.get('/landmark/:id', async (req, res) => {
-    // TODO: get comments and images in one big object
+  const result = await pool.query(`
+    SELECT *
+    FROM landmark l JOIN accessibility a ON l.accessibility_id=a.id
+  `);
+  res.send(result.rows);
 });
 
 app.post('/landmark', async (req, res) => {
-    // TODO: add new landmark
+  const {longitude, latitude, accessibilityId, exists} = req.body;
+  const result = await pool.query(`
+    INSERT INTO landmark (longitude, latitude, accessibility_id, exists)
+    VALUES ($1, $2, $3, $4)
+    RETURNING *
+  `, [longitude, latitude, accessibilityId, exists]);
+  res.send(result.rows[0]);
+});
+
+app.get('/landmark/:id', async (req, res) => {
+  const id = req.params.id;
+  const comments = await pool.query(`
+    SELECT * FROM comment WHERE landmark_id=$1
+  `, [id]);
+  const photos = await pool.query(`
+    SELECT * FROM photo WHERE landmark_id=$1
+  `, [id]);
+  res.send({comments: comments, photos: photos});
 });
 
 app.put('/landmark/:id/vote', async (req, res) => {
-    // TODO: update vote
+  const {landmarkId, isUp} = req.body;
+  const column = isUp ? "upvotes" : "downvotes";
+  const result = await pool.query(`
+    UPDATE landmark SET ${column}=${column}+1 WHERE landmark_id=$1
+    RETURNING *
+  `, [landmarkId, column]);
+  res.send(result.rows[0]);
 });
-
 app.post('/landmark/:id/comment', async (req, res) => {
-    // TODO: new comment attached to landmark
+  const {landmarkId, text} = req.body;
+  const result = await pool.query(`
+    INSERT INTO comment (landmark_id, text)
+    VALUES ($1, $2)
+    RETURNING *
+  `, [landmarkId, text]);
+  res.send(result.rows[0]);
 });
 app.post('/landmark/:id/photo', async (req, res) => {
-    // TODO: new photo attached to landmark
+  const {landmarkId, url} = req.body;
+  const result = await pool.query(`
+    INSERT INTO photo (landmark_id, url)
+    VALUES ($1, $2)
+    RETURNING *
+  `, [landmarkId, url]);
+  res.send(result.rows[0]);
 });
 
 // fake BS to pander to GCL judges
-app.get('/landmark_id/:id/advice', async (req, res) => {
-    // TODO: delay for a bit to make it look like it's thinking
-    // query params for landmark id
-    // if exists return how to use the service
-    // else return how it could be fixed and who to contact
+app.get('/landmarkd/:id/advice', async (req, res) => {
+  // TODO: delay for a bit to make it look like it's thinking
+  // query params for landmark id
+  // if exists return how to use the service
+  // else return how it could be fixed and who to contact
 });
-app.get('/route/:source_landmark_id/:target_landmark_id', async (req, res) => {
-    // TODO: use query params to get landmark a to b
+app.get('/route/:sourceId/:targetId', async (req, res) => {
+  // TODO: use query params to get landmark a to b
 });
 
 const port = process.env.EXPRESS_PORT;

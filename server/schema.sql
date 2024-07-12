@@ -24,16 +24,15 @@ CREATE TABLE IF NOT EXISTS landmark (
     downvotes INT NOT NULL
 );
 
-
 CREATE TABLE IF NOT EXISTS comment (
     id SERIAL PRIMARY KEY,
-    ramp_id INT REFERENCES landmark(id),
-    comment VARCHAR(255)
+    landmark_id INT REFERENCES landmark(id),
+    text VARCHAR(255)
 );
 -- CREATE TABLE IF NOT EXISTS reply
 
 CREATE TABLE IF NOT EXISTS photo (
     id SERIAL PRIMARY KEY,
-    ramp_id INT REFERENCES landmark(id),
+    landmark_id INT REFERENCES landmark(id),
     url VARCHAR(255)
 )
