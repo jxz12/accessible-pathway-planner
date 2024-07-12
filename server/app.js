@@ -1,12 +1,10 @@
 const express = require('express')
 const { Pool } = require("pg");
-
-require("dotenv").config;
-console.log(process.env);
+require("dotenv").config();
 
 const pool = new Pool({
     connectionString: process.env.SUPABASE_CONNECTION_STRING,
-    ssl: { rejectUnauthorized: false },
+    // ssl: { rejectUnauthorized: false },
 });
 
 const app = express();
