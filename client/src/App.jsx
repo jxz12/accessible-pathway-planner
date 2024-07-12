@@ -4,6 +4,8 @@ import pinsvg from "./assets/react.svg";
 import Map, { FullscreenControl, NavigationControl, ScaleControl, Marker } from 'react-map-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';  // NOTE: this is needed for controls to render correctly
 
+export const BACKEND_ROOT = `https://${import.meta.env.VITE_BACKEND_HOST}:${import.meta.env.VITE_BACKEND_PORT}`;
+
 
 export default function App() {
   const [viewState, setViewState] = useState({
@@ -12,27 +14,20 @@ export default function App() {
     latitude: 43.6635,
     zoom: 14.5,
   });
-  const backend_root = `https://${import.meta.env.VITE_BACKEND_HOST}:${import.meta.env.VITE_BACKEND_PORT}`;
+  const [pinLngLat, setPinLngLat] = useState({lng:0, lat:0});
+  const [addingPin, setAddingPin] = useState(false);
 
-  const [pins, setPins] = useState([
-    { longitude: -79.3961, latitude: 43.6635, id: 0},
-  ]);
+  const [pinId, setPinId] = useState(-1);
+  const [viewingPin, setViewingPin] = useState(false);
+
+  const [pins, setPins] = useState([]);
   const addPin = (mapEvent) => {
-    // TODO: This will eventually just be an auto-increment SQL column
-    const newId = pins.length>0 ? pins[pins.length-1].id+1 : 0;
-    setPins([...pins, {
-      longitude: mapEvent.lngLat.lng,
-      latitude: mapEvent.lngLat.lat,
-      id: newId,
-    }]);
-    fetch(`${backend_root}/accessibility`).then((rsp) => {
-      return rsp.json();
-    }).then((rsp) => {
-      console.log(rsp);
-    });
+    setPinLngLat(mapEvent.lngLat);
+    setAddingPin(true);
   };
   const viewPin = (id) => {
-    setPins(pins.filter((pin) => pin.id !== id));
+    setPinId(id);
+    setViewingPin(true);
   };
 
   return (
