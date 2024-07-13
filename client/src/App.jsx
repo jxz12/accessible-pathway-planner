@@ -6,7 +6,7 @@ import LandmarkAddModal from './LandmarkAddModal';
 import LandmarkViewModal from "./LandmarkViewModal";
 
 
-export const BACKEND_ROOT = `http://${import.meta.env.VITE_BACKEND_HOST}:${import.meta.env.VITE_BACKEND_PORT}`;
+export const BACKEND_ROOT = import.meta.env.VITE_BACKEND_HOST;
 
 const ICONS = {
   "ramp": "♿️",
