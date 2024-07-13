@@ -96,7 +96,7 @@ app.post('/landmark/:id/comment', asyncHandler(async (req, res) => {
 }));
 
 // fake BS to pander to GCL judges
-app.get('/landmark/:id/advice', asyncHandler(async (req, res) => {
+app.get('/landmark/:id/wisdom', asyncHandler(async (req, res) => {
   // https://stackoverflow.com/a/39914235
   // delay for a bit to make it look like it's thinking
   await new Promise(r => setTimeout(r, 1500));

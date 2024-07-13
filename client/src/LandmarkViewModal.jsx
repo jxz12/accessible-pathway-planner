@@ -14,14 +14,17 @@ import {
 } from "@mui/material";
 
 import { BACKEND_ROOT } from "./App";
+import AIModal from "./AIModal";
 
 
-const style = {
+export const MODAL_STYLE = {
   position: 'absolute',
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
   width: "80%",
+  maxHeight: "80vh",
+  overflow: "auto",
   bgcolor: 'background.paper',
   border: '2px solid #000',
   boxShadow: 24,
@@ -38,6 +41,7 @@ export default function LandmarkViewModal({ open, close, landmark }) {
   const [newComment, setNewComment] = useState("");
   const [error, setError] = useState(null);
   const [retries, setRetries] = useState(0);
+  const [usingAI, setUsingAI] = useState(false);
 
   useEffect(() => {
     // trigger wireframes while loading
@@ -102,13 +106,13 @@ export default function LandmarkViewModal({ open, close, landmark }) {
 
   return (
     <Modal open={open} onClick={close}>
-      <Box sx={style} onClick={(e) => e.stopPropagation()}>
+      <Box sx={MODAL_STYLE} onClick={(e) => e.stopPropagation()}>
         {photos === null ? (
           <CircularProgress />
         ) : (
           <Box>
             <Box>
-              <Typography variant="h4">
+              <Typography variant="h3">
                 {landmark.exists ? "Does" : "Is"} this <u>{landmark.accessibility_name}</u> {landmark.exists ? "exist" : "missing"}?
               </Typography>
             </Box>
@@ -116,7 +120,9 @@ export default function LandmarkViewModal({ open, close, landmark }) {
               <Button variant="outlined" onClick={() => vote(true)}>
                 <Typography variant="h4">👍</Typography>
               </Button>
-              <Typography display="inline" variant="h4">&nbsp;{upvotes} : {downvotes}&nbsp;</Typography>
+              <Typography display="inline" variant="h4" sx={{ verticalAlign: "middle" }}>
+                &nbsp;{upvotes} - {downvotes}&nbsp;
+              </Typography>
               <Button variant="outlined" onClick={() => vote(false)}>
                 <Typography variant="h4">👎</Typography>
               </Button>
@@ -126,8 +132,8 @@ export default function LandmarkViewModal({ open, close, landmark }) {
             ) : (
               <Box>
                 <Typography variant="h6">Photos</Typography>
-                <Paper style={{ maxHeight: "25vh", overflow: "auto" }}>
-                  <ImageList variant="woven" cols={2} gap={5}>
+                <Paper sx={{ maxHeight: "25vh", overflow: "auto" }}>
+                  <ImageList variant="masonry" cols={2} gap={5}>
                     {photos.map((photo) => (
                       <ImageListItem key={photo.id}>
                         <img src={photo.url} loading="lazy" />
@@ -157,12 +163,12 @@ export default function LandmarkViewModal({ open, close, landmark }) {
             ) : (
               <Box>
                 <Typography variant="h6">Comments</Typography>
-                <Paper style={{ maxHeight: "18vh", overflow: "auto" }}>
+                <Paper sx={{ maxHeight: "25vh", overflow: "auto", padding: "0.5em", verticalAlign: "middle" }}>
                   {comments.sort((a,b) => b.id - a.id).map((comment) => (
                     <Card key={comment.id}>
                       <CardContent>
-                        <Typography variant="caption">
-                          {comment.text}
+                        <Typography variant="body2">
+                          🗣️ {comment.text}
                         </Typography>
                       </CardContent>
                     </Card>
@@ -189,8 +195,19 @@ export default function LandmarkViewModal({ open, close, landmark }) {
                 <Button onClick={() => setRetries((curr) => curr + 1)}>Retry</Button>
               </Box>
             )}
+            <Box sx={{pt: "1em"}}>
+              <Button variant="contained" onClick={() => setUsingAI(true)}>🤖 Ask AI for help?</Button>
+            </Box>
           </Box>
         )}
+        <AIModal
+          open={usingAI}
+          close={() => setUsingAI(false)}
+          landmarkId={landmark.id}
+        />
+        <Box sx={{pt: "1em", pb: "-2em"}}>
+          <Button onClick={close}>Back to map</Button>
+        </Box>
       </Box>
     </Modal>
   );

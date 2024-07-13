@@ -81,22 +81,22 @@ export default function App() {
         ).map((landmark) => (
           <Marker longitude={landmark.longitude} latitude={landmark.latitude} key={landmark.id} anchor="bottom">
             <div
-              style={{ "display": "grid", "gridTemplate": "1fr / 1fr" }}
+              style={{ display: "grid", gridTemplate: "1fr / 1fr" }}
               onClick={(e) => { viewLandmark(landmark); e.stopPropagation(); }}
             >
               <div style={{
-                "fontSize": "4em",
-                "gridColumn": "1 / 1",
-                "gridRow": "1 / 1",
-                "textAlign": "center",
+                fontSize: "4em",
+                gridColumn: "1 / 1",
+                gridRow: "1 / 1",
+                textAlign: "center",
               }}>
                 {landmark.exists ? "🟩" : "🟥"}
               </div>
               <div style={{
-                "fontSize": "3em",
-                "gridColumn": "1 / 1",
-                "gridRow": "1 / 1",
-                "textAlign": "center",
+                fontSize: "3em",
+                gridColumn: "1 / 1",
+                gridRow: "1 / 1",
+                textAlign: "center",
               }}>
                 {ICONS[landmark.accessibility_name] || "📍" }
               </div>

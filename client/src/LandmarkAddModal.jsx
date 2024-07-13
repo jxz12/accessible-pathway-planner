@@ -10,20 +10,8 @@ import {
 } from "@mui/material";
 
 import { BACKEND_ROOT } from "./App";
+import { MODAL_STYLE } from "./LandmarkViewModal";
 
-
-const style = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: "80%",
-  bgcolor: 'background.paper',
-  border: '2px solid #000',
-  boxShadow: 24,
-  p: 4,
-  textAlign: "center",
-};
 
 export default function LandmarkAddModal({ open, close, lngLat, accessibilities, newLandmarkCallback }) {
   const [accessibilityId, setAccessibilityId] = useState(accessibilities[0].id);
@@ -55,7 +43,7 @@ export default function LandmarkAddModal({ open, close, lngLat, accessibilities,
   };
   return (
     <Modal open={open} onClick={close}>
-      <Box sx={style} onClick={(e) => e.stopPropagation()}>
+      <Box sx={MODAL_STYLE} onClick={(e) => e.stopPropagation()}>
       {error ? (
         <Box>
           <CircularProgress />
@@ -91,6 +79,9 @@ export default function LandmarkAddModal({ open, close, lngLat, accessibilities,
           </Box>
         </Box>
       )}
+      <Box sx={{pt: "1em"}}>
+        <Button onClick={close}>Back to map</Button>
+      </Box>
       </Box>
     </Modal>
   );
