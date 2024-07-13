@@ -15,7 +15,7 @@ app.use(express.json());
 
 // https://stackoverflow.com/a/63776090
 const asyncHandler = (fn) => (req, res, next) => {
-  console.log(req.originalUrl);
+  console.log(req.method, req.originalUrl);
   return Promise.resolve(fn(req, res, next)).catch(next);
 };
 
