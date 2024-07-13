@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS accessibility (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(255)
+    name VARCHAR(255) NOT NULL
 );
 INSERT INTO accessibility (name)
 VALUES (
@@ -26,13 +26,13 @@ CREATE TABLE IF NOT EXISTS landmark (
 
 CREATE TABLE IF NOT EXISTS comment (
     id SERIAL PRIMARY KEY,
-    landmark_id INT REFERENCES landmark(id),
-    text VARCHAR(255)
+    landmark_id INT REFERENCES landmark(id) NOT NULL,
+    text VARCHAR(255) NOT NULL
 );
 -- CREATE TABLE IF NOT EXISTS reply
 
 CREATE TABLE IF NOT EXISTS photo (
     id SERIAL PRIMARY KEY,
-    landmark_id INT REFERENCES landmark(id),
-    url VARCHAR(255)
+    landmark_id INT REFERENCES landmark(id) NOT NULL,
+    url VARCHAR(255) NOT NULL
 )

@@ -29,25 +29,22 @@ export default function App() {
     });
   }, []);
 
+  const [addingLngLat, setAddingLngLat] = useState(null);
+  const addLandmark = (mapEvent) => {
+    setAddingLngLat(mapEvent.lngLat);
+  };
+
+  const [viewingLandmark, setViewingLandmark] = useState(null);
+  const viewLandmark = (landmark) => {
+    setViewingLandmark(landmark);
+  };
+
   const [viewState, setViewState] = useState({
     // Toronto
     longitude: -79.3961,
     latitude: 43.6635,
     zoom: 14.5,
   });
-  const [landmarkLngLat, setLandmarkLngLat] = useState({lng:0, lat:0});
-  const [addingLandmark, setAddingLandmark] = useState(false);
-  const addLandmark = (mapEvent) => {
-    setLandmarkLngLat(mapEvent.lngLat);
-    setAddingLandmark(true);
-  };
-
-  const [landmarkId, setLandmarkId] = useState(-1);
-  const [viewingLandmark, setViewingLandmark] = useState(false);
-  const viewLandmark = (id) => {
-    setLandmarkId(id);
-    setViewingLandmark(true);
-  };
 
   return (
     <>
@@ -64,26 +61,27 @@ export default function App() {
         <ScaleControl />
         {landmarks.map((landmark) => (
           <Marker longitude={landmark.longitude} latitude={landmark.latitude} key={landmark.id} anchor="bottom">
-            <img src={pinsvg} onClick={(e) => { viewLandmark(landmark.id); e.stopPropagation(); }} />
+            <img src={pinsvg} onClick={(e) => { viewLandmark(landmark); e.stopPropagation(); }} />
           </Marker>
         ))}
       </Map>
       {accessibilities.length > 0 && (
         <LandmarkAddModal
-          open={addingLandmark}
-          setOpen={setAddingLandmark}
-          lngLat={landmarkLngLat}
+          open={addingLngLat !== null}
+          close={() => setAddingLngLat(null)}
+          lngLat={addingLngLat}
           accessibilities={accessibilities}
           newLandmarkCallback={(newLandmark) => {
-            setLandmarks([...landmarks, newLandmark]);
+            setLandmarks((prev) => [...prev, newLandmark]);
+            setAddingLngLat(null);
           }}
         />
       )}
-      {landmarkId >= 0 && (
+      {viewingLandmark !== null && (
         <LandmarkViewModal
-          open={viewingLandmark}
-          setOpen={setViewingLandmark}
-          landmarkId={landmarkId}
+          open={viewingLandmark !== null}
+          close={() => setViewingLandmark(null)}
+          landmark={viewingLandmark}
         />
       )}
     </>

@@ -20,7 +20,7 @@ const asyncHandler = (fn) => (req, res, next) => {
 };
 
 app.get('/accessibility', asyncHandler(async (req, res) => {
-  const result = await pool.query("SELECT * FROM accessibility");
+  const result = await pool.query("SELECT id, name FROM accessibility");
   res.send(result.rows);
 }));
 
@@ -35,7 +35,7 @@ app.get('/landmark', asyncHandler(async (req, res) => {
 app.post('/landmark', asyncHandler(async (req, res) => {
   const { longitude, latitude, accessibilityId, exists } = req.body;
   const result = await pool.query(`
-    INSERT INTO landmark (longitude, latitude, accessibility_id, exists, upvotes, downvotes)
+    INSERT INTO landmark (longitude, latitude, accessibility_id, exists)
     VALUES ($1, $2, $3, $4, 0, 0)
     RETURNING *
   `, [longitude, latitude, accessibilityId, exists]);
@@ -44,45 +44,56 @@ app.post('/landmark', asyncHandler(async (req, res) => {
 
 app.get('/landmark/:id', asyncHandler(async (req, res) => {
   const id = req.params.id;
-  const comments = await pool.query(`
-    SELECT * FROM comment WHERE landmark_id=$1
+  const votes = await pool.query(`
+    SELECT upvotes, downvotes FROM landmark WHERE id=$1
   `, [id]);
   const photos = await pool.query(`
-    SELECT * FROM photo WHERE landmark_id=$1
+    SELECT id, url FROM photo WHERE landmark_id=$1
   `, [id]);
-  res.send({ comments: comments, photos: photos });
+  const comments = await pool.query(`
+    SELECT id, text FROM comment WHERE landmark_id=$1
+  `, [id]);
+  res.send({
+    comments: comments.rows,
+    photos: photos.rows,
+    upvotes: votes.rows[0].upvotes,
+    downvotes: votes.rows[0].downvotes
+  });
 }));
 
 app.put('/landmark/:id/vote', asyncHandler(async (req, res) => {
-  const { landmarkId, isUp } = req.body;
+  const id = req.params.id;
+  const { isUp } = req.body;
   const column = isUp ? "upvotes" : "downvotes";
   const result = await pool.query(`
     UPDATE landmark SET ${column}=${column}+1 WHERE landmark_id=$1
     RETURNING *
-  `, [landmarkId, column]);
-  res.send(result.rows[0]);
-}));
-app.post('/landmark/:id/comment', asyncHandler(async (req, res) => {
-  const { landmarkId, text } = req.body;
-  const result = await pool.query(`
-    INSERT INTO comment (landmark_id, text)
-    VALUES ($1, $2)
-    RETURNING *
-  `, [landmarkId, text]);
+  `, [id, column]);
   res.send(result.rows[0]);
 }));
 app.post('/landmark/:id/photo', asyncHandler(async (req, res) => {
-  const { landmarkId, url } = req.body;
+  const id = req.params.id;
+  const { url } = req.body;
   const result = await pool.query(`
     INSERT INTO photo (landmark_id, url)
     VALUES ($1, $2)
     RETURNING *
-  `, [landmarkId, url]);
+  `, [id, url]);
+  res.send(result.rows[0]);
+}));
+app.post('/landmark/:id/comment', asyncHandler(async (req, res) => {
+  const id = req.params.id;
+  const { text } = req.body;
+  const result = await pool.query(`
+    INSERT INTO comment (landmark_id, text)
+    VALUES ($1, $2)
+    RETURNING *
+  `, [id, text]);
   res.send(result.rows[0]);
 }));
 
 // fake BS to pander to GCL judges
-app.get('/landmarkd/:id/advice', asyncHandler(async (req, res) => {
+app.get('/landmark/:id/advice', asyncHandler(async (req, res) => {
   // TODO: delay for a bit to make it look like it's thinking
   // query params for landmark id
   // if exists return how to use the service

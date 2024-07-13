@@ -15,7 +15,7 @@ const style = {
   p: 4,
 };
 
-export default function LandmarkAddModal({ open, setOpen, lngLat, accessibilities, newLandmarkCallback }) {
+export default function LandmarkAddModal({ open, close, lngLat, accessibilities, newLandmarkCallback }) {
   const [accessibilityId, setAccessibilityId] = useState(accessibilities[0].id);
   const [exists, setExists] = useState(false);
   const [error, setError] = useState(null);
@@ -37,31 +37,31 @@ export default function LandmarkAddModal({ open, setOpen, lngLat, accessibilitie
     }).then((rsp) => {
       setError(null);
       newLandmarkCallback(rsp);
-      setOpen(false);
+      close();
     }).catch((err) => {
       console.error(err);
       setError("Could not add new landmark, please try again later");
     });
   };
   return (
-    <Modal open={open} onClick={(event) => setOpen(false)}>
+    <Modal open={open} onClick={close}>
       <Box sx={style} onClick={(event) => event.stopPropagation()}>
-        <div>
+        <Box>
           <Select value={accessibilityId} onChange={(event) => setAccessibilityId(event.target.value)}>
             {accessibilities.map((acc) => (
               <MenuItem key={acc.id} value={acc.id}>{acc.name}</MenuItem>
             ))}
           </Select>
-        </div>
-        <div>
+        </Box>
+        <Box>
           <Switch label="Exists?" onChange={(event) => setExists(event.target.checked)} size="large" />
-        </div>
-        <div>
+        </Box>
+        <Box>
           <Button variant="contained" onClick={postLandmark}>Submit</Button>
-        </div>
-        <div>
+        </Box>
+        <Box>
           {error && (<p>{error}</p>)}
-        </div>
+        </Box>
       </Box>
     </Modal>
   );
