@@ -4,9 +4,10 @@ import 'maplibre-gl/dist/maplibre-gl.css';  // NOTE: this is needed for controls
 
 import pinsvg from "./assets/react.svg";
 import LandmarkAddModal from './LandmarkAddModal'
+import LandmarkViewModal from "./LandmarkViewModal";
+
 
 export const BACKEND_ROOT = `http://${import.meta.env.VITE_BACKEND_HOST}:${import.meta.env.VITE_BACKEND_PORT}`;
-
 
 export default function App() {
   const [accessibilities, setAccessibilities] = useState([]);
@@ -70,12 +71,19 @@ export default function App() {
       {accessibilities.length > 0 && (
         <LandmarkAddModal
           open={addingLandmark}
+          setOpen={setAddingLandmark}
           lngLat={landmarkLngLat}
           accessibilities={accessibilities}
           newLandmarkCallback={(newLandmark) => {
             setLandmarks([...landmarks, newLandmark]);
-            setAddingLandmark(false);
           }}
+        />
+      )}
+      {landmarkId >= 0 && (
+        <LandmarkViewModal
+          open={viewingLandmark}
+          setOpen={setViewingLandmark}
+          landmarkId={landmarkId}
         />
       )}
     </>

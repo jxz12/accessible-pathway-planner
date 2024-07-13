@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Modal, Box, Select, MenuItem, Switch, Button } from "@mui/material";
 import { BACKEND_ROOT } from "./App";
 
@@ -15,7 +15,7 @@ const style = {
   p: 4,
 };
 
-export default function LandmarkAdd({ open, lngLat, accessibilities, newLandmarkCallback }) {
+export default function LandmarkAddModal({ open, setOpen, lngLat, accessibilities, newLandmarkCallback }) {
   const [accessibilityId, setAccessibilityId] = useState(accessibilities[0].id);
   const [exists, setExists] = useState(false);
   const [error, setError] = useState(null);
@@ -37,14 +37,15 @@ export default function LandmarkAdd({ open, lngLat, accessibilities, newLandmark
     }).then((rsp) => {
       setError(null);
       newLandmarkCallback(rsp);
+      setOpen(false);
     }).catch((err) => {
       console.error(err);
       setError("Could not add new landmark, please try again later");
     });
   };
   return (
-    <Modal open={open}>
-      <Box sx={style}>
+    <Modal open={open} onClick={(event) => setOpen(false)}>
+      <Box sx={style} onClick={(event) => event.stopPropagation()}>
         <div>
           <Select value={accessibilityId} onChange={(event) => setAccessibilityId(event.target.value)}>
             {accessibilities.map((acc) => (
@@ -59,10 +60,9 @@ export default function LandmarkAdd({ open, lngLat, accessibilities, newLandmark
           <Button variant="contained" onClick={postLandmark}>Submit</Button>
         </div>
         <div>
-          {}
           {error && (<p>{error}</p>)}
         </div>
       </Box>
     </Modal>
-  )
+  );
 }
