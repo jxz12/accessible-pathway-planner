@@ -1,10 +1,13 @@
 import { useState } from "react";
+import { Modal, Box, Select, MenuItem, Switch, Button } from "@mui/material";
+
+const BACKEND_ROOT = `http://${import.meta.env.VITE_BACKEND_HOST}:${import.meta.env.VITE_BACKEND_PORT}`;
 
 
-export default function AddPinModal({lngLat, accessibilities, onPinAdded}) {
-  [accessibilityId, setAccessibilityId] = useState(-1);
-  [exists, setExists] = useState(false);
-  [error, setError] = useState(null);
+export default function AddPin({ open, lngLat, accessibilities, newPinCallback }) {
+  const [accessibilityId, setAccessibilityId] = useState(accessibilities[0].id);
+  const [exists, setExists] = useState(false);
+  const [error, setError] = useState(null);
 
   const postLandmark = () => {
     const body = JSON.stringify({
@@ -13,29 +16,32 @@ export default function AddPinModal({lngLat, accessibilities, onPinAdded}) {
       accessibilityId: accessibilityId,
       exists: exists,
     });
-    fetch(`${backend_root}/landmark`, {method: "POST", body: body}).then((rsp) => {
+    fetch(`${BACKEND_ROOT}/landmark`, {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: body,
+    }).then((rsp) => {
       return rsp.json();
     }).then((rsp) => {
       console.log(rsp);
       setError(null);
-      onPinAdded(rsp);
+      newPinCallback(rsp);
     }).catch((err) => {
       setError("Could not add new landmark, please try again later");
     });
   };
   return (
-    <div>
-      <select onChange={(event) => {setAccessibilityId(event.target.id)}}>
-        {accessibilities.map((accesibility) => (
-          <option id={accesibility.id} value={accessibility.name}>{accessibility.name}</option>
-        ))}
-      </select>
-      <input type="checkbox" checked={exists} onChange={(event) => setExists((exists) => !exists)} />
-      <button onClick={postLandmark}>Submit</button>
-      {error && (
-        <p>{error}</p>
-      )}
-      <p></p>
-    </div>
+    <Modal open={open}>
+      <Box>
+        <Select value={accessibilityId} onChange={(event) => setAccessibilityId(event.target.value)}>
+          {accessibilities.map((acc) => (
+            <MenuItem key={acc.id} value={acc.id}>{acc.name}</MenuItem>
+          ))}
+        </Select>
+        <Switch label="Exists?" onChange={(event) => setExists(event.target.checked)} size="large" />
+        <Button variant="contained" onClick={postLandmark}>Submit</Button>
+        {error && (<p>{error}</p>)}
+      </Box>
+    </Modal>
   )
 }

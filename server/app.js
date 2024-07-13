@@ -1,5 +1,7 @@
 const express = require('express')
 const { Pool } = require("pg");
+const cors = require("cors");
+
 require("dotenv").config();
 
 const pool = new Pool({
@@ -8,6 +10,8 @@ const pool = new Pool({
 });
 
 const app = express();
+app.use(cors());
+app.use(express.json());
 
 app.get('/accessibility', async (req, res) => {
   const result = await pool.query("SELECT * FROM accessibility");
@@ -25,8 +29,8 @@ app.get('/landmark', async (req, res) => {
 app.post('/landmark', async (req, res) => {
   const {longitude, latitude, accessibilityId, exists} = req.body;
   const result = await pool.query(`
-    INSERT INTO landmark (longitude, latitude, accessibility_id, exists)
-    VALUES ($1, $2, $3, $4)
+    INSERT INTO landmark (longitude, latitude, accessibility_id, exists, upvotes, downvotes)
+    VALUES ($1, $2, $3, $4, 0, 0)
     RETURNING *
   `, [longitude, latitude, accessibilityId, exists]);
   res.send(result.rows[0]);
