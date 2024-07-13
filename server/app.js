@@ -39,7 +39,10 @@ app.post('/landmark', asyncHandler(async (req, res) => {
     VALUES ($1, $2, $3, $4, 0, 0)
     RETURNING *
   `, [longitude, latitude, accessibilityId, exists]);
-  res.send(result.rows[0]);
+  const accessibility = await pool.query(`
+    SELECT name AS accessibility_name FROM accessibility WHERE id=$1
+  `, [accessibilityId])
+  res.send({...result.rows[0], ...accessibility.rows[0]});
 }));
 
 app.get('/landmark/:id', asyncHandler(async (req, res) => {
