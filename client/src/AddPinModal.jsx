@@ -1,7 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Modal, Box, Select, MenuItem, Switch, Button } from "@mui/material";
-
-const BACKEND_ROOT = `http://${import.meta.env.VITE_BACKEND_HOST}:${import.meta.env.VITE_BACKEND_PORT}`;
+import { BACKEND_ROOT } from "./App";
 
 
 export default function AddPin({ open, lngLat, accessibilities, newPinCallback }) {
@@ -23,7 +22,6 @@ export default function AddPin({ open, lngLat, accessibilities, newPinCallback }
     }).then((rsp) => {
       return rsp.json();
     }).then((rsp) => {
-      console.log(rsp);
       setError(null);
       newPinCallback(rsp);
     }).catch((err) => {
