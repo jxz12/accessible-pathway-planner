@@ -21,14 +21,12 @@ const style = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 400,
+  width: "80%",
   bgcolor: 'background.paper',
   border: '2px solid #000',
   boxShadow: 24,
   p: 4,
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
+  textAlign: 'center',
 };
 
 export default function LandmarkViewModal({ open, close, landmark }) {
@@ -111,13 +109,17 @@ export default function LandmarkViewModal({ open, close, landmark }) {
           <Box>
             <Box>
               <Typography variant="h4">
-                {landmark.exists ? "Does" : "Is"} this {landmark.accessibility_name} {landmark.exists ? "exist" : "missing"}?
+                {landmark.exists ? "Does" : "Is"} this <u>{landmark.accessibility_name}</u> {landmark.exists ? "exist" : "missing"}?
               </Typography>
             </Box>
             <Box sx={{m: "1em"}}>
-              <Button variant="outlined" onClick={() => vote(true)}>👍</Button>
-              <Typography display="inline">&nbsp;{upvotes} : {downvotes}&nbsp;</Typography>
-              <Button variant="outlined" onClick={() => vote(false)}>👎</Button>
+              <Button variant="outlined" onClick={() => vote(true)}>
+                <Typography variant="h4">👍</Typography>
+              </Button>
+              <Typography display="inline" variant="h4">&nbsp;{upvotes} : {downvotes}&nbsp;</Typography>
+              <Button variant="outlined" onClick={() => vote(false)}>
+                <Typography variant="h4">👎</Typography>
+              </Button>
             </Box>
             {!photos.length ? (
               <Typography>No photos added yet, please add one!</Typography> 

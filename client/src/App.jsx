@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Map, { FullscreenControl, NavigationControl, ScaleControl, Marker } from 'react-map-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';  // NOTE: this is needed for controls to render correctly
 
@@ -8,17 +8,13 @@ import LandmarkViewModal from "./LandmarkViewModal";
 
 export const BACKEND_ROOT = `http://${import.meta.env.VITE_BACKEND_HOST}:${import.meta.env.VITE_BACKEND_PORT}`;
 
-function getIcon(accessibility_name) {
-  const icons = {
-    "ramp": "♿️",
-    "elevator": "🛗",
-    "disabled toilet": "🚽",
-    "large enough door": "🚪",
-    "braille": "⠵",
-    "hearing loop": "🦻",
-  };
-  return icons[accessibility_name] || "📍";
-}
+const ICONS = { "ramp": "♿️",
+  "elevator": "🛗",
+  "disabled toilet": "🚽",
+  "large enough door": "🚪",
+  "braille": "⠵",
+  "hearing loop": "🦻",
+};
 
 export default function App() {
   const [accessibilities, setAccessibilities] = useState([]);
@@ -56,10 +52,16 @@ export default function App() {
     latitude: 43.6635,
     zoom: 14.5,
   });
+  const mapRef = useRef();
+  const inViewport = (lng, lat) => {
+    const bounds = mapRef.current.getBounds();
+    return bounds.contains([lng, lat]);
+  }
 
   return (
     <>
       <Map
+        ref={mapRef}
         mapLib={import("maplibre-gl")}
         {...viewState}
         onMove={evt => setViewState(evt.viewState)}
@@ -96,7 +98,7 @@ export default function App() {
                 "gridRow": "1 / 1",
                 "textAlign": "center",
               }}>
-                {getIcon(landmark.accessibility_name)}
+                {ICONS[landmark.accessibility_name] || "📍" }
               </div>
             </div>
           </Marker>
