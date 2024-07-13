@@ -8,13 +8,29 @@ import LandmarkViewModal from "./LandmarkViewModal";
 
 export const BACKEND_ROOT = `http://${import.meta.env.VITE_BACKEND_HOST}:${import.meta.env.VITE_BACKEND_PORT}`;
 
-const ICONS = { "ramp": "♿️",
+const ICONS = {
+  "ramp": "♿️",
   "elevator": "🛗",
   "disabled toilet": "🚽",
   "large enough door": "🚪",
   "braille": "⠵",
   "hearing loop": "🦻",
 };
+
+const MARKER_STYLE = {
+  gridColumn: "1 / 1",
+  gridRow: "1 / 1",
+  textAlign: "center",
+  "@keyframes pop": {
+    "0%": {
+      transform: "scale(0.0)"
+    },
+    "100%": {
+      transform: "scale(1.0)"
+    }
+  },
+  animation: "pop 1s ease-in-out",
+}
 
 export default function App() {
   const [accessibilities, setAccessibilities] = useState([]);
@@ -75,7 +91,7 @@ export default function App() {
         <NavigationControl />
         <ScaleControl />
         {landmarks.sort(
-          (a,b) => a.id-b.id
+          (a, b) => a.id - b.id
         ).slice(
           Math.max(landmarks.length - 10, 0)
         ).map((landmark) => (
@@ -84,21 +100,11 @@ export default function App() {
               style={{ display: "grid", gridTemplate: "1fr / 1fr" }}
               onClick={(e) => { viewLandmark(landmark); e.stopPropagation(); }}
             >
-              <div style={{
-                fontSize: "4em",
-                gridColumn: "1 / 1",
-                gridRow: "1 / 1",
-                textAlign: "center",
-              }}>
+              <div style={{ ...MARKER_STYLE, fontSize: "4em" }}>
                 {landmark.exists ? "🟩" : "🟥"}
               </div>
-              <div style={{
-                fontSize: "3em",
-                gridColumn: "1 / 1",
-                gridRow: "1 / 1",
-                textAlign: "center",
-              }}>
-                {ICONS[landmark.accessibility_name] || "📍" }
+              <div style={{ ...MARKER_STYLE, fontSize: "3em" }}>
+                {ICONS[landmark.accessibility_name] || "📍"}
               </div>
             </div>
           </Marker>

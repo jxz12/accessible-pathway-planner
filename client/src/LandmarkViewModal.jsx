@@ -64,7 +64,7 @@ export default function LandmarkViewModal({ open, close, landmark }) {
   const vote = (isUp) => {
     fetch(`${BACKEND_ROOT}/landmark/${landmark.id}/vote`, {
       method: "PUT",
-      headers: {"Content-Type": "application/json"},
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ isUp: isUp }),
     }).then((rsp) => {
       return rsp.json();
@@ -78,7 +78,7 @@ export default function LandmarkViewModal({ open, close, landmark }) {
   const addPhoto = (url) => {
     fetch(`${BACKEND_ROOT}/landmark/${landmark.id}/photo`, {
       method: "POST",
-      headers: {"Content-Type": "application/json"},
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ url: url }),
     }).then((rsp) => {
       return rsp.json();
@@ -92,7 +92,7 @@ export default function LandmarkViewModal({ open, close, landmark }) {
   const addComment = (text) => {
     fetch(`${BACKEND_ROOT}/landmark/${landmark.id}/comment`, {
       method: "POST",
-      headers: {"Content-Type": "application/json"},
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text: text }),
     }).then((rsp) => {
       return rsp.json();
@@ -116,7 +116,7 @@ export default function LandmarkViewModal({ open, close, landmark }) {
                 {landmark.exists ? "Does" : "Is"} this <u>{landmark.accessibility_name}</u> {landmark.exists ? "exist" : "missing"}?
               </Typography>
             </Box>
-            <Box sx={{m: "1em"}}>
+            <Box sx={{ m: "1em" }}>
               <Button variant="outlined" onClick={() => vote(true)}>
                 <Typography variant="h4">👍</Typography>
               </Button>
@@ -128,13 +128,13 @@ export default function LandmarkViewModal({ open, close, landmark }) {
               </Button>
             </Box>
             {!photos.length ? (
-              <Typography>No photos added yet, please add one!</Typography> 
+              <Typography>No photos added yet, please add one!</Typography>
             ) : (
               <Box>
                 <Typography variant="h6">Photos</Typography>
                 <Paper sx={{ maxHeight: "25vh", overflow: "auto" }}>
                   <ImageList variant="masonry" cols={2} gap={5}>
-                    {photos.map((photo) => (
+                    {photos.sort((a, b) => b.id - a.id).map((photo) => (
                       <ImageListItem key={photo.id}>
                         <img src={photo.url} loading="lazy" />
                       </ImageListItem>
@@ -164,7 +164,7 @@ export default function LandmarkViewModal({ open, close, landmark }) {
               <Box>
                 <Typography variant="h6">Comments</Typography>
                 <Paper sx={{ maxHeight: "25vh", overflow: "auto", padding: "0.5em", verticalAlign: "middle" }}>
-                  {comments.sort((a,b) => b.id - a.id).map((comment) => (
+                  {comments.sort((a, b) => b.id - a.id).map((comment) => (
                     <Card key={comment.id}>
                       <CardContent>
                         <Typography variant="body2">
@@ -195,7 +195,7 @@ export default function LandmarkViewModal({ open, close, landmark }) {
                 <Button onClick={() => setRetries((curr) => curr + 1)}>Retry</Button>
               </Box>
             )}
-            <Box sx={{pt: "1em"}}>
+            <Box sx={{ pt: "1em" }}>
               <Button variant="contained" onClick={() => setUsingAI(true)}>🤖 Ask AI for help?</Button>
             </Box>
           </Box>
@@ -205,7 +205,7 @@ export default function LandmarkViewModal({ open, close, landmark }) {
           close={() => setUsingAI(false)}
           landmarkId={landmark.id}
         />
-        <Box sx={{pt: "1em", pb: "-2em"}}>
+        <Box sx={{ pt: "1em", pb: "-2em" }}>
           <Button onClick={close}>Back to map</Button>
         </Box>
       </Box>
