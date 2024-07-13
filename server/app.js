@@ -35,7 +35,7 @@ app.get('/landmark', asyncHandler(async (req, res) => {
 app.post('/landmark', asyncHandler(async (req, res) => {
   const { longitude, latitude, accessibilityId, exists } = req.body;
   const result = await pool.query(`
-    INSERT INTO landmark (longitude, latitude, accessibility_id, exists)
+    INSERT INTO landmark (longitude, latitude, accessibility_id, exists, upvotes, downvotes)
     VALUES ($1, $2, $3, $4, 0, 0)
     RETURNING *
   `, [longitude, latitude, accessibilityId, exists]);
@@ -66,9 +66,9 @@ app.put('/landmark/:id/vote', asyncHandler(async (req, res) => {
   const { isUp } = req.body;
   const column = isUp ? "upvotes" : "downvotes";
   const result = await pool.query(`
-    UPDATE landmark SET ${column}=${column}+1 WHERE landmark_id=$1
+    UPDATE landmark SET ${column}=${column}+1 WHERE id=$1
     RETURNING *
-  `, [id, column]);
+  `, [id]);
   res.send(result.rows[0]);
 }));
 app.post('/landmark/:id/photo', asyncHandler(async (req, res) => {
@@ -94,10 +94,11 @@ app.post('/landmark/:id/comment', asyncHandler(async (req, res) => {
 
 // fake BS to pander to GCL judges
 app.get('/landmark/:id/advice', asyncHandler(async (req, res) => {
-  // TODO: delay for a bit to make it look like it's thinking
-  // query params for landmark id
-  // if exists return how to use the service
-  // else return how it could be fixed and who to contact
+  // https://stackoverflow.com/a/39914235
+  // delay for a bit to make it look like it's thinking
+  await new Promise(r => setTimeout(r, 1500));
+
+  res.send({text: "This ramp has been marked as missing for 5 months, however there is a ramp 10 meters down the road that leads to the same entrance."})
 }));
 app.get('/route/:sourceId/:targetId', asyncHandler(async (req, res) => {
   // TODO: use query params to get landmark a to b

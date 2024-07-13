@@ -1,5 +1,14 @@
 import { useState } from "react";
-import { Modal, Box, Select, MenuItem, Switch, Button } from "@mui/material";
+import { 
+  Modal,
+  Box, 
+  Select, 
+  MenuItem, 
+  Typography, 
+  Button,
+  CircularProgress,
+} from "@mui/material";
+
 import { BACKEND_ROOT } from "./App";
 
 
@@ -34,9 +43,9 @@ export default function LandmarkAddModal({ open, close, lngLat, accessibilities,
       body: body,
     }).then((rsp) => {
       return rsp.json();
-    }).then((rsp) => {
+    }).then((json) => {
       setError(null);
-      newLandmarkCallback(rsp);
+      newLandmarkCallback(json);
       close();
     }).catch((err) => {
       console.error(err);
@@ -45,23 +54,34 @@ export default function LandmarkAddModal({ open, close, lngLat, accessibilities,
   };
   return (
     <Modal open={open} onClick={close}>
-      <Box sx={style} onClick={(event) => event.stopPropagation()}>
-        <Box>
-          <Select value={accessibilityId} onChange={(event) => setAccessibilityId(event.target.value)}>
-            {accessibilities.map((acc) => (
-              <MenuItem key={acc.id} value={acc.id}>{acc.name}</MenuItem>
-            ))}
-          </Select>
+      <Box sx={style} onClick={(e) => e.stopPropagation()}>
+      {error ? (
+        <Box textAlign="center">
+          <CircularProgress />
+          <Typography variant="caption">{error}</Typography>
         </Box>
+      ) : (
         <Box>
-          <Switch label="Exists?" onChange={(event) => setExists(event.target.checked)} size="large" />
+          <Box textAlign="center">
+            <Typography variant="h4">
+              Mark a new <Select value={accessibilityId} onChange={(e) => setAccessibilityId(e.target.value)}>
+                {accessibilities.map((acc) => (
+                  <MenuItem key={acc.id} value={acc.id}>{acc.name}</MenuItem>
+                ))}
+              </Select>
+            </Typography>
+            <Typography variant="h4" sx={{mt: ".3em"}}>
+              as <Select value={exists} onChange={(e) => setExists(e.target.value)}>
+                <MenuItem key="missing" value={false}>missing</MenuItem>
+                <MenuItem key="existing" value={true}>working</MenuItem>
+              </Select>?
+            </Typography>
+          </Box>
+          <Box textAlign="center" sx={{mt: "1em"}}>
+            <Button variant="contained" size="large" onClick={postLandmark}>Submit</Button>
+          </Box>
         </Box>
-        <Box>
-          <Button variant="contained" onClick={postLandmark}>Submit</Button>
-        </Box>
-        <Box>
-          {error && (<p>{error}</p>)}
-        </Box>
+      )}
       </Box>
     </Modal>
   );
